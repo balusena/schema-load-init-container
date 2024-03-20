@@ -38,8 +38,8 @@ case "${SCHEMA_TYPE}" in
         # Download certificate bundle for MongoDB SSL connection
         curl -s -L "https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem" -o "/app/rds-combined-ca-bundle.pem" || handle_error "Failed to download certificate bundle."
 
-        # Setup MongoDB schema with SSL
-        if ! mongo "${MONGO_URL}&ssl=true" --sslCAFile "/app/rds-combined-ca-bundle.pem"; then
+        # Setup MongoDB schema
+        if ! mongo "${MONGO_URL}" --sslCAFile "/app/rds-combined-ca-bundle.pem"; then
             handle_error "Failed to setup MongoDB schema."
         fi
         ;;
