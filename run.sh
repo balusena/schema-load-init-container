@@ -20,7 +20,6 @@ git clone https://github.com/balusena/${COMPONENT}
 cd ${COMPONENT}/schema
 
 if [ "${SCHEMA_TYPE}" == "mongo" ]; then
-  #curl -o /app/rds-combined-ca-bundle.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
   curl -s -L https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem -o /app/rds-combined-ca-bundle.pem
   mongo --ssl --host ${DOCDB_ENDPOINT}:27017 --sslCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} <${COMPONENT}.js
 elif [ "${SCHEMA_TYPE}" == "mysql" ]; then
