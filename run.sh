@@ -41,9 +41,9 @@ if [ "${SCHEMA_TYPE}" == "mongo" ]; then
     # Download a certificate file
     curl -s -L https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem -o /app/rds-combined-ca-bundle.pem
     # Connect to MongoDB and execute a JavaScript file
-    #mongo --ssl --host ${DOCDB_ENDPOINT}:27017 --sslCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} <${COMPONENT}.js
+    mongo --ssl --host ${DOCDB_ENDPOINT}:27017 --sslCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} <${COMPONENT}.js
     # Connect to MongoDB and execute a JavaScript file
-    mongo --tls --host ${DOCDB_ENDPOINT}:27017 --tlsCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} <${COMPONENT}.js
+    #mongo --tls --host ${DOCDB_ENDPOINT}:27017 --tlsCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} <${COMPONENT}.js
 
 # Check if the schema type is MySQL
 elif [ "${SCHEMA_TYPE}" == "mysql" ]; then
