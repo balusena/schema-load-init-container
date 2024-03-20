@@ -1,16 +1,26 @@
 #!/bin/bash
 
+# Purpose: This script automates the deployment and configuration process for database schemas.
+# It retrieves parameters, clones a Git repository, and executes database scripts based on the schema type.
+
+
+# Start debugging output
 set -x
 
 # Loop until parameter file is found
-while true; do
+while true ; do
+  # Check if parameter file exists
   if [ -f /data/params ]; then
+    # Display parameters
     echo "### Parameters"
     cat /data/params
+    # Load parameters from file
     source /data/params
     break
   else
+    # Display current date while waiting
     echo $(date) - Waiting for Parameters
+    # Wait for 5 seconds before checking again
     sleep 5
   fi
 done
@@ -29,18 +39,10 @@ cd ${COMPONENT}/schema
 
 # Check if the schema type is MongoDB
 if [ "${SCHEMA_TYPE}" == "mongo" ]; then
-  # Download the certificate file
+  # Download a certificate file
   curl -s -L https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem -o /app/rds-combined-ca-bundle.pem
-
-  # Check if TLS is enabled
-  if [ "${TLS_ENABLED}" == "true" ]; then
-    # Connect to MongoDB using TLS
-    mongo --tls --host ${DOCDB_ENDPOINT}:27017 --tlsCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} <${COMPONENT}.js
-  else
-    # Connect to MongoDB using SSL
-    mongo --ssl --host ${DOCDB_ENDPOINT}:27017 --sslCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} <${COMPONENT}.js
-  fi
-
+  # Connect to MongoDB and execute a JavaScript file
+  mongo --ssl --host ${DOCDB_ENDPOINT}:27017 --sslCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} <${COMPONENT}.js
 # Check if the schema type is MySQL
 elif [ "${SCHEMA_TYPE}" == "mysql" ]; then
   # Check if the 'cities' database exists
@@ -49,7 +51,7 @@ elif [ "${SCHEMA_TYPE}" == "mysql" ]; then
   if [ $? -ne 0 ]; then
     mysql -h ${MYSQL_ENDPOINT} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} <${COMPONENT}.sql
   fi
-else
+else  # If the schema type is neither MongoDB nor MySQL
   # Display an error message
   echo Invalid Schema Input
   # Exit the script with an error code
