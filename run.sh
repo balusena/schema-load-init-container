@@ -16,7 +16,7 @@ done
 
 mkdir /app/
 cd /app/
-git clone https://github.com/raghudevopsb73/${COMPONENT}
+git clone https://github.com/balusena/${COMPONENT}
 cd ${COMPONENT}/schema
 
 if [ "${SCHEMA_TYPE}" == "mongo" ]; then
