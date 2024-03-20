@@ -39,7 +39,9 @@ case "${SCHEMA_TYPE}" in
         curl -s -L "https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem" -o "/app/rds-combined-ca-bundle.pem" || handle_error "Failed to download certificate bundle."
 
         # Setup MongoDB schema
-        mongo --ssl --host "${DOCDB_ENDPOINT}:27017" --sslCAFile "/app/rds-combined-ca-bundle.pem" --username "${DOCDB_USERNAME}" --password "${DOCDB_PASSWORD}" < "${COMPONENT}.js" || handle_error "Failed to setup MongoDB schema."
+        if ! mongo --ssl --host "${DOCDB_ENDPOINT}:27017" --sslCAFile "/app/rds-combined-ca-bundle.pem" --username "${DOCDB_USERNAME}" --password "${DOCDB_PASSWORD}" < "${COMPONENT}.js"; then
+            handle_error "Failed to setup MongoDB schema."
+        fi
         ;;
     "mysql")
         # Check if the database already contains the schema
@@ -56,4 +58,3 @@ case "${SCHEMA_TYPE}" in
 esac
 
 echo "Schema setup completed successfully."
-
