@@ -25,7 +25,7 @@ if [ "${SCHEMA_TYPE}" == "mongo" ]; then
 elif [ "${SCHEMA_TYPE}" == "mysql" ]; then
   echo show databases | mysql -h ${MYSQL_ENDPOINT} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} | grep cities
   if [ $? -ne 0 ]; then
-    mysql -h ${MYSQL_ENDPOINT} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} < ${COMPONENT}.sql
+    mysql -h ${MYSQL_ENDPOINT} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} <${COMPONENT}.sql
   fi
 else
   echo Invalid Schema Input
