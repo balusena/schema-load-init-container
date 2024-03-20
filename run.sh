@@ -59,3 +59,4 @@ else  # If the schema type is neither MongoDB nor MySQL
     # Exit the script with an error code
     exit 1
 fi
+
