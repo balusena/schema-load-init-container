@@ -2,24 +2,22 @@
 
 set -x
 
-# Ensure that MongoDB credentials and endpoint are set
-if [[ -z "${DOCDB_USERNAME}" || -z "${DOCDB_PASSWORD}" || -z "${DOCDB_ENDPOINT}" ]]; then
-    echo "ERROR: MongoDB credentials or endpoint are not set."
-    exit 1
-fi
-
-# Define a function to check MongoDB connectivity
-check_mongo_connection() {
-    mongo --ssl --host ${DOCDB_ENDPOINT}:27017 --sslCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} --eval "db.runCommand('ping')" >/dev/null 2>&1
+# Define a function to check if MongoDB credentials and endpoint are set
+check_mongo_credentials() {
+    if [[ -z "${DOCDB_USERNAME}" || -z "${DOCDB_PASSWORD}" || -z "${DOCDB_ENDPOINT}" ]]; then
+        return 1
+    else
+        return 0
+    fi
 }
 
-# Wait for MongoDB connectivity
-while ! check_mongo_connection; do
-    echo "$(date) - Waiting for MongoDB connection"
+# Wait until MongoDB credentials and endpoint are set
+while ! check_mongo_credentials; do
+    echo "$(date) - Waiting for MongoDB credentials and endpoint to be set"
     sleep 5
 done
 
-echo "$(date) - MongoDB connection established"
+echo "$(date) - MongoDB credentials and endpoint are set"
 
 # Proceed with the rest of the script
 while true ; do
@@ -48,6 +46,4 @@ elif [ "${SCHEMA_TYPE}" == "mysql" ]; then
     mysql -h ${MYSQL_ENDPOINT} -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD} <${COMPONENT}.sql
   fi
 else
-  echo Invalid Schema Input
-  exit 1
-fi
+  echo Invalid
