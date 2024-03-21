@@ -2,10 +2,16 @@
 
 set -e
 
-# Function to wait for the parameters file
+# Function to wait for the parameters file with timeout
 wait_for_params() {
+  local timeout=300  # Timeout in seconds (adjust as needed)
+  local start_time=$(date +%s)
+  echo "Waiting for parameters file..."
   while [ ! -f "/data/params" ]; do
-    echo "Waiting for parameters file..."
+    if [ $(($(date +%s) - start_time)) -ge $timeout ]; then
+      echo "Timeout waiting for parameters file."
+      exit 1
+    fi
     sleep 5
   done
   echo "Parameters file found."
@@ -39,8 +45,7 @@ load_schema() {
 
 # Execute functions
 wait_for_params
-print_params
 source "/data/params"  # Source parameters file
+print_params
 echo "SCHEMA_TYPE after sourcing: ${SCHEMA_TYPE}"  # Debug statement
 load_schema
-
