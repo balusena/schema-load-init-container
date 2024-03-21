@@ -1,20 +1,14 @@
 #!/bin/bash
 
-set -e
+set -euo pipefail
 
-# Function to wait for the parameters file with timeout
+# Function to wait for the parameters file
 wait_for_params() {
-  local timeout=300  # Timeout in seconds (adjust as needed)
-  local start_time=$(date +%s)
-  echo "Waiting for parameters file..."
   while [ ! -f "/data/params" ]; do
-    if [ $(($(date +%s) - start_time)) -ge $timeout ]; then
-      echo "Timeout waiting for parameters file."
-      exit 1
-    fi
+    echo "$(date) - Waiting for parameters file..."
     sleep 5
   done
-  echo "Parameters file found."
+  echo "$(date) - Parameters file found."
 }
 
 # Function to print parameters
@@ -25,7 +19,7 @@ print_params() {
 
 # Main function to load schema
 load_schema() {
-  echo "Loading schema..."
+  echo "$(date) - Loading schema..."
   echo "SCHEMA_TYPE: ${SCHEMA_TYPE}"  # Debug statement
 
   # Place your schema loading logic here
@@ -45,7 +39,8 @@ load_schema() {
 
 # Execute functions
 wait_for_params
-source "/data/params"  # Source parameters file
 print_params
-echo "SCHEMA_TYPE after sourcing: ${SCHEMA_TYPE}"  # Debug statement
+source "/data/params"  # Source parameters file
+echo "$(date) - SCHEMA_TYPE after sourcing: ${SCHEMA_TYPE}"  # Debug statement
 load_schema
+
