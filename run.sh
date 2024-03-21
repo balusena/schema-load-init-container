@@ -2,6 +2,20 @@
 
 set -x
 
+# Define a function to check MongoDB connectivity
+check_mongo_connection() {
+    mongo --ssl --host ${DOCDB_ENDPOINT}:27017 --sslCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} --eval "db.runCommand('ping')" >/dev/null 2>&1
+}
+
+# Wait for MongoDB connectivity
+while ! check_mongo_connection; do
+    echo "$(date) - Waiting for MongoDB connection"
+    sleep 5
+done
+
+echo "$(date) - MongoDB connection established"
+
+# Proceed with the rest of the script
 while true ; do
   if [ -f /data/params ]; then
     echo "### Parameters"
@@ -9,7 +23,7 @@ while true ; do
     source /data/params
     break
   else
-    echo $(date) - Waiting for Parameters
+    echo "$(date) - Waiting for Parameters"
     sleep 5
   fi
 done
