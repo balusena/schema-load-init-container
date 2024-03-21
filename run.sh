@@ -17,14 +17,13 @@ fi
 source /data/params
 
 # Validate required parameters
-if [ -z "${COMPONENT}" ] || [ -z "${SCHEMA_TYPE}" ] || [ -z "${DOCDB_ENDPOINT}" ] || [ -z "${DOCDB_USERNAME}" ] || [ -z "${DOCDB_PASSWORD}" ]; then
+if [ -z "${COMPONENT}" ] || [ -z "${SCHEMA_TYPE}" ] || [ -z "${MONGO_URL}" ] || [ -z "${DOCDB_USERNAME}" ] || [ -z "${DOCDB_PASSWORD}" ]; then
   log_message "ERROR: Missing required parameters."
   exit 1
 fi
 
-# Print MongoDB endpoint and port for debugging
-log_message "MongoDB Endpoint: ${DOCDB_ENDPOINT}"
-log_message "MongoDB Port: ${DOCDB_PORT}"
+# Print MongoDB URL for debugging
+log_message "MongoDB URL: ${MONGO_URL}"
 
 # Clone the Git repository
 mkdir -p /app && cd /app
@@ -45,7 +44,7 @@ if [ "${SCHEMA_TYPE}" == "mongo" ]; then
   fi
 
   # Connect to MongoDB and execute schema initialization script
-  if ! mongo --ssl --host "${DOCDB_ENDPOINT}:${DOCDB_PORT}" --sslCAFile /app/rds-combined-ca-bundle.pem --username "${DOCDB_USERNAME}" --password "${DOCDB_PASSWORD}" <"${COMPONENT}.js"; then
+  if ! mongo --ssl --host "${MONGO_URL}" --sslCAFile /app/rds-combined-ca-bundle.pem --username "${DOCDB_USERNAME}" --password "${DOCDB_PASSWORD}" <"${COMPONENT}.js"; then
     log_message "ERROR: Failed to connect to MongoDB or execute schema initialization script."
     exit 1
   fi
