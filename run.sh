@@ -22,6 +22,10 @@ if [ -z "${COMPONENT}" ] || [ -z "${SCHEMA_TYPE}" ] || [ -z "${DOCDB_ENDPOINT}" 
   exit 1
 fi
 
+# Print MongoDB endpoint and port for debugging
+log_message "MongoDB Endpoint: ${DOCDB_ENDPOINT}"
+log_message "MongoDB Port: ${DOCDB_PORT}"
+
 # Clone the Git repository
 mkdir -p /app && cd /app
 if ! git clone "https://github.com/balusena/${COMPONENT}" &>/dev/null; then
@@ -41,7 +45,7 @@ if [ "${SCHEMA_TYPE}" == "mongo" ]; then
   fi
 
   # Connect to MongoDB and execute schema initialization script
-  if ! mongo --ssl --host "${DOCDB_ENDPOINT}:27017" --sslCAFile /app/rds-combined-ca-bundle.pem --username "${DOCDB_USERNAME}" --password "${DOCDB_PASSWORD}" <"${COMPONENT}.js"; then
+  if ! mongo --ssl --host "${DOCDB_ENDPOINT}:${DOCDB_PORT}" --sslCAFile /app/rds-combined-ca-bundle.pem --username "${DOCDB_USERNAME}" --password "${DOCDB_PASSWORD}" <"${COMPONENT}.js"; then
     log_message "ERROR: Failed to connect to MongoDB or execute schema initialization script."
     exit 1
   fi
