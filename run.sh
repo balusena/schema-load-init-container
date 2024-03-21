@@ -40,5 +40,7 @@ load_schema() {
 # Execute functions
 wait_for_params
 print_params
+source "/data/params"  # Source parameters file
+echo "SCHEMA_TYPE after sourcing: ${SCHEMA_TYPE}"  # Debug statement
 load_schema
 
