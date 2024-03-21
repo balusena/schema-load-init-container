@@ -20,6 +20,7 @@ print_params() {
 # Main function to load schema
 load_schema() {
   echo "Loading schema..."
+  echo "SCHEMA_TYPE: ${SCHEMA_TYPE}"  # Debug statement
 
   # Place your schema loading logic here
   if [ "${SCHEMA_TYPE}" == "mongo" ]; then
@@ -40,3 +41,4 @@ load_schema() {
 wait_for_params
 print_params
 load_schema
+
