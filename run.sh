@@ -45,3 +45,4 @@ else
   echo Invalid Schema Input
   exit 1
 fi
+
