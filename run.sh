@@ -1,33 +1,42 @@
 #!/bin/bash
 
-set -x
+set -e
 
-while true; do
-  if [ -f "/data/params" ]; then
-    echo "### Parameters"
-    cat "/data/params"
-    source "/data/params"
-    break
-  else
-    echo "$(date) - Waiting for Parameters"
+# Function to wait for the parameters file
+wait_for_params() {
+  while [ ! -f "/data/params" ]; do
+    echo "Waiting for parameters file..."
     sleep 5
-  fi
-done
+  done
+  echo "Parameters file found."
+}
 
-mkdir "/app"
-cd "/app" || exit 1
-git clone "https://github.com/balusena/${COMPONENT}" || exit 1
-cd "${COMPONENT}/schema" || exit 1
+# Function to print parameters
+print_params() {
+  echo "### Parameters:"
+  cat "/data/params"
+}
 
-if [ "${SCHEMA_TYPE}" == "mongo" ]; then
-  curl -s -L "https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem" -o "/app/rds-combined-ca-bundle.pem" || exit 1
-  mongo --ssl --host "${DOCDB_ENDPOINT}:27017" --sslCAFile "/app/rds-combined-ca-bundle.pem" --username "${DOCDB_USERNAME}" --password "${DOCDB_PASSWORD}" <"${COMPONENT}.js" || exit 1
-elif [ "${SCHEMA_TYPE}" == "mysql" ]; then
-  echo "show databases" | mysql -h "${MYSQL_ENDPOINT}" -u"${MYSQL_USERNAME}" -p"${MYSQL_PASSWORD}" | grep cities
-  if [ $? -ne 0 ]; then
-    mysql -h "${MYSQL_ENDPOINT}" -u"${MYSQL_USERNAME}" -p"${MYSQL_PASSWORD}" <"${COMPONENT}.sql" || exit 1
+# Main function to load schema
+load_schema() {
+  echo "Loading schema..."
+
+  # Place your schema loading logic here
+  if [ "${SCHEMA_TYPE}" == "mongo" ]; then
+    curl -s -L "https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem" -o "/app/rds-combined-ca-bundle.pem"
+    mongo --ssl --host "${DOCDB_ENDPOINT}:27017" --sslCAFile "/app/rds-combined-ca-bundle.pem" --username "${DOCDB_USERNAME}" --password "${DOCDB_PASSWORD}" <"${COMPONENT}.js"
+  elif [ "${SCHEMA_TYPE}" == "mysql" ]; then
+    echo "show databases" | mysql -h "${MYSQL_ENDPOINT}" -u"${MYSQL_USERNAME}" -p"${MYSQL_PASSWORD}" | grep cities
+    if [ $? -ne 0 ]; then
+      mysql -h "${MYSQL_ENDPOINT}" -u"${MYSQL_USERNAME}" -p"${MYSQL_PASSWORD}" <"${COMPONENT}.sql"
+    fi
+  else
+    echo "Invalid Schema Input"
+    exit 1
   fi
-else
-  echo "Invalid Schema Input"
-  exit 1
-fi
+}
+
+# Execute functions
+wait_for_params
+print_params
+load_schema
