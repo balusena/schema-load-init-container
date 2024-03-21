@@ -2,7 +2,7 @@
 
 set -x
 
-# Ensure that variables are properly set and exported
+# Ensure that MongoDB credentials and endpoint are set
 if [[ -z "${DOCDB_USERNAME}" || -z "${DOCDB_PASSWORD}" || -z "${DOCDB_ENDPOINT}" ]]; then
     echo "ERROR: MongoDB credentials or endpoint are not set."
     exit 1
