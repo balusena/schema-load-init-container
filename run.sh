@@ -2,6 +2,12 @@
 
 set -x
 
+# Ensure that variables are properly set and exported
+if [[ -z "${DOCDB_USERNAME}" || -z "${DOCDB_PASSWORD}" || -z "${DOCDB_ENDPOINT}" ]]; then
+    echo "ERROR: MongoDB credentials or endpoint are not set."
+    exit 1
+fi
+
 # Define a function to check MongoDB connectivity
 check_mongo_connection() {
     mongo --ssl --host ${DOCDB_ENDPOINT}:27017 --sslCAFile /app/rds-combined-ca-bundle.pem --username ${DOCDB_USERNAME} --password ${DOCDB_PASSWORD} --eval "db.runCommand('ping')" >/dev/null 2>&1
@@ -45,4 +51,3 @@ else
   echo Invalid Schema Input
   exit 1
 fi
-
