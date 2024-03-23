@@ -5,6 +5,7 @@ set -x
 mkdir /app
 cd /app
 git clone https://github.com/balusena/$COMPONENT .
+cd ${COMPONENT}/schema
 
 source /data/params
 
